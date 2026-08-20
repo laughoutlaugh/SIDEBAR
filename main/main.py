@@ -1,23 +1,36 @@
 import pygame
 
-WIDTH = 480
-HEIGHT = 320
+from ui.screen import Screen
+from ui.main_menu import MainMenu
 
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("SIDEBAR")
 
-clock = pygame.time.Clock()
+def main():
+    pygame.init()
 
-running = True
+    screen = Screen()
+    menu = MainMenu(screen)
+    running = True
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    screen.fill((20, 20, 20))
+            elif event.type == pygame.KEYDOWN: # On buttonpress
+                if event.key == pygame.K_UP: # Up arrow
+                    menu.move_up()
+                elif event.key == pygame.K_DOWN: # Down arrow
+                    menu.move_down()
+                elif event.key == pygame.K_RIGHT: # Right arrow
+                    selected = menu.select()
+                    print("Selected:", selected)
 
-    pygame.display.flip()
-    clock.tick(60)
+        menu.draw()
+        pygame.display.flip()
+        screen.clock.tick(60)
 
-pygame.quit()
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
