@@ -4,6 +4,7 @@ from ui.screen import Screen
 from ui.main_menu import MainMenu
 from ui.list_screen import ListScreen
 from ui.now_playing import NowPlaying
+from player.mock_player import MockPlayer
 
 
 class App:
@@ -18,39 +19,36 @@ class App:
         # -------------------------
 
         self.songs = [
-            "Song One",
-            "Song Two",
-            "Song Three",
-            "Song Four",
-            "Song Five",
-            "Song Six",
-            "Song Seven",
-            "Song Eight",
-            "Song Nine",
-            "Song Ten",
-            "Song Eleven",
-            "Song Twelve",
-        ]
-
-        self.albums = [
-            "Album One",
-            "Album Two",
-            "Album Three",
-            "Album Four",
-            "Album Five",
-            "Album Six",
-            "Album Seven",
-        ]
-
-        self.artists = [
-            "Artist One",
-            "Artist Two",
-            "Artist Three",
-            "Artist Four",
-            "Artist Five",
-            "Artist Six",
-            "Artist Seven",
-            "Artist Eight",
+            {
+                "title": "Song One",
+                "artist": "Artist One",
+                "album": "Album One",
+            },
+            {
+                "title": "Song Two",
+                "artist": "Artist One",
+                "album": "Album One",
+            },
+            {
+                "title": "Song Three",
+                "artist": "Artist Two",
+                "album": "Album Two",
+            },
+            {
+                "title": "Song Four",
+                "artist": "Artist Two",
+                "album": "Album Two",
+            },
+            {
+                "title": "Song Five",
+                "artist": "Artist Three",
+                "album": "Album Three",
+            },
+            {
+                "title": "Song Six",
+                "artist": "Artist Three",
+                "album": "Album Three",
+            },
         ]
 
         # -------------------------
@@ -59,23 +57,40 @@ class App:
 
         self.main_menu = MainMenu(self.screen)
 
+        self.song_titles = [
+            song["title"]
+            for song in self.songs
+        ]
+
         self.song_list = ListScreen(
             self.screen,
             "Songs",
-            self.songs
+            self.song_titles
         )
+
+        self.album_titles = [
+            song["album"]
+            for song in self.songs
+        ]
 
         self.album_list = ListScreen(
             self.screen,
             "Albums",
-            self.albums
+            self.album_titles
         )
+
+        self.artist_titles = [
+            song["artist"]
+            for song in self.songs
+        ]
 
         self.artist_list = ListScreen(
             self.screen,
             "Artists",
-            self.artists
+            self.artist_titles
         )
+
+        self.player = MockPlayer(self.songs)
 
         self.now_playing = NowPlaying(self.screen)
 
@@ -96,10 +111,9 @@ class App:
                 else:
                     self.handle_input(event)
 
+            self.update()
             self.draw()
-
             pygame.display.flip()
-
             self.screen.clock.tick(60)
 
         pygame.quit()
@@ -151,13 +165,20 @@ class App:
 
             elif event.key == pygame.K_RIGHT:
 
-                selected = self.song_list.select()
+                selected_index = self.song_list.selected
+
+                self.player.current_index = selected_index
+                self.player.position = 0
+
+                song = self.player.current_song
 
                 self.now_playing.set_song(
-                    selected,
-                    "Test Artist",
-                    "Test Album"
+                    song["title"],
+                    song["artist"],
+                    song["album"]
                 )
+
+                self.player.play()
 
                 self.current_screen = "now_playing"
 
@@ -212,8 +233,14 @@ class App:
 
         elif self.current_screen == "now_playing":
 
+            if event.key == pygame.K_1:
+                self.player.previous()
+
             if event.key == pygame.K_2:
-                self.now_playing.toggle_play()
+                self.player.toggle_play()
+
+            if event.key == pygame.K_3:
+                self.player.next()
 
             elif event.key == pygame.K_LEFT:
                 self.current_screen = "songs"
@@ -234,3 +261,9 @@ class App:
 
         elif self.current_screen == "now_playing":
             self.now_playing.draw()
+
+    def update(self):
+        self.player.update()
+
+        if self.current_screen == "now_playing":
+            self.now_playing.update_song(self.player)

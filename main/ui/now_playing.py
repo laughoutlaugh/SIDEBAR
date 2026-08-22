@@ -123,3 +123,11 @@ class NowPlaying:
 
     def toggle_play(self):
         self.playing = not self.playing
+
+    def update_song(self, player):
+        song = player.current_song
+
+        self.song = song["title"]
+        self.artist = song["artist"]
+        self.album = song["album"]
+        self.playing = player.playing
