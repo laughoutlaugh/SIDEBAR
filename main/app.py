@@ -260,7 +260,7 @@ class App:
             self.artist_list.draw()
 
         elif self.current_screen == "now_playing":
-            self.now_playing.draw()
+            self.now_playing.draw(self.player)
 
     def update(self):
         self.player.update()

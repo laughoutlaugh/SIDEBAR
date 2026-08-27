@@ -20,7 +20,7 @@ class NowPlaying:
         self.album = album
         self.playing = True
 
-    def draw(self):
+    def draw(self, player):
         surface = self.screen.surface
         surface.fill((20, 20, 20))
 
@@ -103,6 +103,53 @@ class NowPlaying:
             (bar_x, bar_y, bar_width, bar_height)
         )
 
+        # Progress
+        progress_width = int(
+            bar_width * player.progress
+        )
+
+        pygame.draw.rect(
+            surface,
+            (200, 200, 200),
+            (
+                bar_x,
+                bar_y,
+                progress_width,
+                bar_height
+            )
+        )
+
+        # Times labels
+        current_time = self.format_time(player.position)
+        total_time = self.format_time(player.duration)
+
+        current_text = self.small_font.render(
+            current_time,
+            True,
+            (180, 180, 180)
+        )
+
+        total_text = self.small_font.render(
+            total_time,
+            True,
+            (180, 180, 180)
+        )
+
+        surface.blit(
+            current_text,
+            (bar_x, bar_y + 8)
+        )
+
+        total_rect = total_text.get_rect(
+            top = bar_y * 8,
+            right = bar_x + bar_width
+        )
+
+        surface.blit(
+            total_text,
+            total_rect
+        )
+
         # Playback controls
         if self.playing:
             control_text = "◀     II     ▶"
@@ -131,3 +178,9 @@ class NowPlaying:
         self.artist = song["artist"]
         self.album = song["album"]
         self.playing = player.playing
+
+    def format_time(self, seconds):
+        minutes = int(seconds // 60)
+        seconds = int(seconds % 60)
+
+        return f"{minutes}:{seconds:02d}"

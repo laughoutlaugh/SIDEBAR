@@ -41,13 +41,18 @@ class MockPlayer:
         self.play()
 
     def previous(self):
-        self.current_index -= 1
+        if self.position < 2.0: # If less than 2
 
-        if self.current_index < 0:
-            self.current_index = len(self.songs) - 1
+            self.current_index -= 1
 
-        self.position = 0.0
-        self.play()
+            if self.current_index < 0:
+                self.current_index = len(self.songs) - 1
+
+            self.position = 0.0
+            self.play()
+
+        else:
+            self.position = 0.0
 
     def update(self):
         now = time.monotonic()
