@@ -57,37 +57,25 @@ class App:
 
         self.main_menu = MainMenu(self.screen)
 
-        self.song_titles = [
-            song["title"]
-            for song in self.songs
-        ]
-
         self.song_list = ListScreen(
             self.screen,
             "Songs",
-            self.song_titles
+            self.songs,
+            "song"
         )
-
-        self.album_titles = [
-            song["album"]
-            for song in self.songs
-        ]
 
         self.album_list = ListScreen(
             self.screen,
             "Albums",
-            self.album_titles
+            self.songs,
+            "album"
         )
-
-        self.artist_titles = [
-            song["artist"]
-            for song in self.songs
-        ]
 
         self.artist_list = ListScreen(
             self.screen,
             "Artists",
-            self.artist_titles
+            self.songs,
+            "artist"
         )
 
         self.player = MockPlayer(self.songs)
